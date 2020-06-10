@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
             R.id.action_account -> {
                 val userFragment = UserFragment()
+                var bundle = Bundle()
+                var uid = FirebaseAuth.getInstance().currentUser?.uid
+                bundle.putString("destinationUid",uid)
+                userFragment.arguments = bundle
                 supportFragmentManager.beginTransaction().replace(R.id.main_content, userFragment)
                     .commit()
                 return true
