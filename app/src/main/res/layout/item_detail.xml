@@ -20,15 +20,15 @@
             android:id="@+id/detailviewitem_profile_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User Name" />a
+            android:text="User Name" />
 
     </LinearLayout>
 
     <ImageView
         android:id="@+id/detailviewitem_imageview_content"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:scaleType="fitXY" />
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter" />
 
     <LinearLayout
         android:layout_width="match_parent"
