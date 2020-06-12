@@ -18,6 +18,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.instagram.LoginActivity
 import com.example.instagram.MainActivity
 import com.example.instagram.R
+import com.example.instagram.navigation.model.AlarmDTO
 import com.example.instagram.navigation.model.ContentDTO
 import com.example.instagram.navigation.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -142,7 +143,7 @@ class UserFragment : Fragment(){
                 followDTO = FollowDTO()
                 followDTO!!.followerCount = 1
                 followDTO!!.followers[currentUserUid!!] = true
-
+                followerAlarm(uid!!)
                 transaction.set(tsDocFollower,followDTO!!)
                 return@runTransaction
             }
@@ -155,6 +156,8 @@ class UserFragment : Fragment(){
                 //It add my follower when I don't follow a third person
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true
+                followerAlarm(uid!!)
+
             }
             transaction.set(tsDocFollower,followDTO!!)
             return@runTransaction
@@ -171,6 +174,15 @@ class UserFragment : Fragment(){
         }
     }
 
+    fun followerAlarm(destinationUid : String){
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth?.currentUser?.email
+        alarmDTO.uid = auth?.currentUser?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timestamp = System.currentTimeMillis()
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+    }
     inner class UserFragmentRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
         var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
         init{
