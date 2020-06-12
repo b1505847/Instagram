@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -46,7 +47,6 @@ class UserFragment : Fragment(){
 
         if(uid == currentUserUid){
             //MyPage
-            fragmentView?.account_btn_follow_signout?.text = getString(R.string.signout)
             fragmentView?.account_btn_follow_signout?.setOnClickListener {
                 activity?.finish()
                 startActivity(Intent(activity, LoginActivity::class.java))
@@ -72,8 +72,6 @@ class UserFragment : Fragment(){
                 requestFollow()
             }
         }
-
-
         getProfileImage()
         getFollowerAndFollowing()
         fragmentView?.account_reyclerview?.adapter = UserFragmentRecyclerViewAdapter()
@@ -85,23 +83,26 @@ class UserFragment : Fragment(){
         firestore?.collection("users")?.document(uid!!)?.addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
             if(documentSnapshot == null) return@addSnapshotListener
             var followDTO = documentSnapshot.toObject(FollowDTO::class.java)
+            if(followDTO?.followers?.containsKey(currentUserUid)!!) {
+                fragmentView?.account_btn_follow_signout!!.text = "Follow Cancel"
+            }
+            else{
+                if(uid != currentUserUid){
+                    fragmentView?.account_btn_follow_signout?.text = "Follow"
+//                    fragmentView?.account_btn_follow_signout?.background?.colorFilter = null
+                }else {
+                    fragmentView?.account_btn_follow_signout?.text = "Signout"
+                }
+
+            }
             if(followDTO?.followingCount != null){
                 fragmentView?.account_tv_following_count?.text = followDTO?.followingCount?.toString()
             }
             if(followDTO?.followerCount != null){
                 fragmentView?.account_tv_follower_count?.text = followDTO?.followerCount?.toString()
-                var name:String? =null
-                if(followDTO?.followers?.containsKey(currentUserUid!!)){
-                    name =  getString(R.string.follow_cancel)
-
-                }else{
-                    if(uid != currentUserUid){
-                        name = getString(R.string.follow)
-                    }
-
-                }
-                fragmentView?.account_btn_follow_signout?.text = name
             }
+
+
         }
     }
 
@@ -128,7 +129,7 @@ class UserFragment : Fragment(){
                 followDTO?.followingCount = followDTO?.followingCount + 1
                 followDTO?.followings[uid!!] = true
             }
-            transaction.set(tsDocFollowing,followDTO)
+            transaction.set(tsDocFollowing,followDTO!!)
             return@runTransaction
         }
 
