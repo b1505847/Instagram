@@ -43,16 +43,16 @@ class CommentActivity : AppCompatActivity() {
             comment_edit_message.setText("")
         }
     }
-    fun commentAlarm(destinationUid :String, message: String){
+    private fun commentAlarm(destinationUid :String, message: String){
         val alarmDTO = AlarmDTO()
         alarmDTO.destinationUid = destinationUid
         alarmDTO.uid= FirebaseAuth.getInstance().currentUser?.uid
         alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
-//            alarmDTO.kind = 0;
+        alarmDTO.kind = 1;
         alarmDTO.message = message
         alarmDTO.timestamp = System.currentTimeMillis()
 
-        FirebaseFirestore.getInstance().collection("alarm").document().set(alarmDTO)
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
     }
     inner class CommentRecyclerviewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(){
 

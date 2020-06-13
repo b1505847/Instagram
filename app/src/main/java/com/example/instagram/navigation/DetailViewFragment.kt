@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.instagram.R
 import com.example.instagram.navigation.model.AlarmDTO
 import com.example.instagram.navigation.model.ContentDTO
@@ -16,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_detail.view.*
+import kotlinx.android.synthetic.main.item_comment.view.*
 import kotlinx.android.synthetic.main.item_detail.view.*
 class DetailViewFragment :Fragment(){
     var firestore : FirebaseFirestore? = null
@@ -105,6 +107,16 @@ class DetailViewFragment :Fragment(){
                 startActivity(intent)
             }
 
+            FirebaseFirestore.getInstance()
+                .collection("profileImages")
+                .document(contentDTOs[p1].uid!!)
+                .get()
+                .addOnCompleteListener { task ->
+                    if(task.isSuccessful){
+                        var url = task.result!!["image"]
+                        Glide.with(p0.itemView.context).load(url).apply(RequestOptions().circleCrop()).into(viewholder.detailviewitem_profile_image)
+                    }
+                }
 
         }
 
@@ -135,7 +147,7 @@ class DetailViewFragment :Fragment(){
             alarmDTO.kind = 0;
             alarmDTO.timestamp = System.currentTimeMillis()
 
-            FirebaseFirestore.getInstance().collection("alarm").document().set(alarmDTO)
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
         }
     }
 }
